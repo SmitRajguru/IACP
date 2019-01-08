@@ -58,7 +58,7 @@
                         if (xhr.readyState == 4 && xhr.status == 200) {
                             var response1 = JSON.parse(xhr.responseText);
                             document.getElementById("score").innerHTML = response1.score;
-                            document.getElementById("classification").innerHTML = response1.class;
+                            document.getElementById("severity").innerHTML = response1.class;
                             document.getElementById("loading").style.display = 'none';
                             document.getElementById("result").style.display = 'block';
                         }
@@ -194,7 +194,7 @@
 
                 <table cellpadding="10" border="1">
                     <tr><td>Composite Score :</td><td id="score"></td></tr>
-                    <tr><td>Classification :</td><td id="classification"></td></tr>
+                    <tr><td>Severity :</td><td id="severity"></td></tr>
                 </table>
             </div>
         </center>
