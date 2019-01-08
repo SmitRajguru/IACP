@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            window.onload = function() {
+                document.getElementById("Submit").onclick = function fun() {
+
+                    let form = document.forms["form"];
+
+                    let fd = new FormData(form);
+
+                    let data = {};
+
+                    for (let [key, prop] of fd) {
+
+                        data[key] = prop;
+                    }
+
+                    let check = data;
+                    data = JSON.stringify(data,null,2);
+
+
+                    if(check.VI > 0 && check.VI <= 100 && check.hasOwnProperty('GMFCS') && check.hasOwnProperty('MACS') && check.hasOwnProperty('CFCS') && check.hasOwnProperty('EDACS') && check.hasOwnProperty('Cognition') && check.hasOwnProperty('Epilepsy')){
+
+                        var Url = "https://test-iacp-epilepsy.herokuapp.com/classify";
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', Url, true);
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                        xhr.send(data);
+
+
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState == 4 && xhr.status == 200) {
+                                var response1 = JSON.parse(xhr.responseText);
+                                document.getElementById("score").innerHTML = response1.score;
+                            }
+                        }
+
+                    }
+                    else{
+                        alert('Select all categories to submit.');
+                    }
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <center>
+            IACP Epilepsy Classifier
+            <br><br> 
+            <form name="form">
+                VI (1-100) : <input type="text" name="VI"/><br><br>
+
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 &nbsp; &nbsp;4 &nbsp; &nbsp;5
+
+                <div id="GMFCS">
+                    GMFCS&nbsp;&nbsp;
+                    <input type="radio" id="1" name="GMFCS" value="1" > 
+                    <input type="radio" id="2" name="GMFCS" value="2">
+                    <input type="radio" id="3" name="GMFCS" value="3">
+                    <input type="radio" id="4" name="GMFCS" value="4">
+                    <input type="radio" id="5" name="GMFCS" value="5">
+                </div>
+
+                <div id="MACS">
+                    MACS&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="radio" id="1" name="MACS" value="1" > 
+                    <input type="radio" id="2" name="MACS" value="2">
+                    <input type="radio" id="3" name="MACS" value="3">
+                    <input type="radio" id="4" name="MACS" value="4">
+                    <input type="radio" id="5" name="MACS" value="5">
+                </div>
+
+                <div id="CFCS">
+                    CFCS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="radio" id="1" name="CFCS" value="1" > 
+                    <input type="radio" id="2" name="CFCS" value="2">
+                    <input type="radio" id="3" name="CFCS" value="3">
+                    <input type="radio" id="4" name="CFCS" value="4">
+                    <input type="radio" id="5" name="CFCS" value="5">
+                </div>
+
+                <div id="EDACS">
+                    EDACS&nbsp;&nbsp;&nbsp;
+                    <input type="radio" id="1" name="EDACS" value="1" > 
+                    <input type="radio" id="2" name="EDACS" value="2">
+                    <input type="radio" id="3" name="EDACS" value="3">
+                    <input type="radio" id="4" name="EDACS" value="4">
+                    <input type="radio" id="5" name="EDACS" value="5">
+                </div>
+
+                <div id="Cognition">
+                    Cognition
+                    <input type="radio" id="1" name="Cognition" value="1" > 
+                    <input type="radio" id="2" name="Cognition" value="2">
+                    <input type="radio" id="3" name="Cognition" value="3">
+                    <input type="radio" id="4" name="Cognition" value="4">
+                    <input type="radio" id="5" name="Cognition" value="5">
+                </div>
+
+                <br>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 &nbsp; &nbsp;4 &nbsp; &nbsp;5 &nbsp; &nbsp;6 &nbsp; &nbsp;7
+
+                <div id="Epilepsy">
+                    Epilepsy&nbsp;&nbsp;
+                    <input type="radio" id="1" name="Epilepsy" value="1" > 
+                    <input type="radio" id="2" name="Epilepsy" value="2">
+                    <input type="radio" id="3" name="Epilepsy" value="3">
+                    <input type="radio" id="4" name="Epilepsy" value="4">
+                    <input type="radio" id="5" name="Epilepsy" value="5">
+                    <input type="radio" id="6" name="Epilepsy" value="6">
+                    <input type="radio" id="7" name="Epilepsy" value="7">
+                </div>
+
+                <br>
+                <input type="button" id="Submit" onclick="f1()" value="Get Result"/>
+            </form>
+            <br>
+
+            <br><br>
+            <table border="1">
+                <tr><td>Epilepsy Score :</td><td id="score"></td></tr>
+            </table>
+        </center>
+    </body>
+</html>
