@@ -3,124 +3,198 @@
     <head>
         <script>
             window.onload = function() {
-                document.getElementById("Submit").onclick = function fun() {
+                document.getElementById("loading").style.display = 'none';
+                document.getElementById("result").style.display = 'none';
+                document.getElementById("entry").style.display = 'none';
+                document.getElementById("waiting").style.display = 'block';
+                
+                var Url = "https://test-iacp-epilepsy.herokuapp.com/weights";
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', Url, true);
+                xhr.send();
 
-                    let form = document.forms["form"];
-
-                    let fd = new FormData(form);
-
-                    let data = {};
-
-                    for (let [key, prop] of fd) {
-
-                        data[key] = prop;
-                    }
-
-                    let check = data;
-                    data = JSON.stringify(data,null,2);
-
-
-                    if(check.VI > 0 && check.VI <= 100 && check.hasOwnProperty('GMFCS') && check.hasOwnProperty('MACS') && check.hasOwnProperty('CFCS') && check.hasOwnProperty('EDACS') && check.hasOwnProperty('Cognition') && check.hasOwnProperty('Epilepsy')){
-
-                        var Url = "https://test-iacp-epilepsy.herokuapp.com/classify";
-                        var xhr = new XMLHttpRequest();
-                        xhr.open('POST', Url, true);
-                        xhr.setRequestHeader('Content-Type', 'application/json');
-                        xhr.send(data);
-
-
-                        xhr.onreadystatechange = function () {
-                            if (xhr.readyState == 4 && xhr.status == 200) {
-                                var response1 = JSON.parse(xhr.responseText);
-                                document.getElementById("score").innerHTML = response1.score;
-                            }
-                        }
-
-                    }
-                    else{
-                        alert('Select all categories to submit.');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        var response1 = JSON.parse(xhr.responseText);
+                        document.getElementById("k1").innerHTML = response1.a.replace(/ /g, "&nbsp;&nbsp;");
+                        document.getElementById("k2").innerHTML = response1.b.replace(/ /g, "&nbsp;&nbsp;");
+                        document.getElementById("k3").innerHTML = response1.c.replace(/ /g, "&nbsp;&nbsp;");
+                        document.getElementById("k4").innerHTML = response1.d.replace(/ /g, "&nbsp;&nbsp;");
+                        document.getElementById("k5").innerHTML = response1.e.replace(/ /g, "&nbsp;&nbsp;");
+                        document.getElementById("k6").innerHTML = response1.f.replace(/ /g, "&nbsp;&nbsp;");
+                        document.getElementById("k7").innerHTML = response1.g.replace(/ /g, "&nbsp;&nbsp;");
+                        document.getElementById("entry").style.display = 'block';
+                        document.getElementById("waiting").style.display = 'none';
                     }
                 }
             }
+
+            function reset(){
+                let form = document.forms["form"];
+                form.reset();
+                document.getElementById("loading").style.display = 'none';
+                document.getElementById("result").style.display = 'none';
+            }
+
+            function sub() {
+                let form = document.forms["form"];
+                let fd = new FormData(form);
+                let data = {};
+                for (let [key, prop] of fd) {
+                    data[key] = prop;
+                }
+                let check = data;
+                data = JSON.stringify(data,null,2);
+                if(check.VI > 0 && check.VI <= 100 && check.hasOwnProperty('GMFCS') && check.hasOwnProperty('MACS') && check.hasOwnProperty('CFCS') && check.hasOwnProperty('EDACS') && check.hasOwnProperty('Cognition') && check.hasOwnProperty('Epilepsy')){
+
+                    document.getElementById("loading").style.display = 'block';
+
+                    var Url = "https://test-iacp-epilepsy.herokuapp.com/classify";
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', Url, true);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.send(data);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            var response1 = JSON.parse(xhr.responseText);
+                            document.getElementById("score").innerHTML = response1.score;
+                            document.getElementById("loading").style.display = 'none';
+                            document.getElementById("result").style.display = 'block';
+                        }
+                    }
+                }
+                else{
+                    if(check.VI > 0 && check.VI <= 100)
+                        alert('Select all categories to submit.');
+                    else
+                        alert('VI values should be between 1 and 100.');
+                }
+            }
+
         </script>
     </head>
     <body>
         <center>
-            IACP Epilepsy Classifier
-            <br><br> 
-            <form name="form">
-                VI (1-100) : <input type="text" name="VI"/><br><br>
-
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 &nbsp; &nbsp;4 &nbsp; &nbsp;5
-
-                <div id="GMFCS">
-                    GMFCS&nbsp;&nbsp;
-                    <input type="radio" id="1" name="GMFCS" value="1" > 
-                    <input type="radio" id="2" name="GMFCS" value="2">
-                    <input type="radio" id="3" name="GMFCS" value="3">
-                    <input type="radio" id="4" name="GMFCS" value="4">
-                    <input type="radio" id="5" name="GMFCS" value="5">
-                </div>
-
-                <div id="MACS">
-                    MACS&nbsp;&nbsp;&nbsp;&nbsp;
-                    <input type="radio" id="1" name="MACS" value="1" > 
-                    <input type="radio" id="2" name="MACS" value="2">
-                    <input type="radio" id="3" name="MACS" value="3">
-                    <input type="radio" id="4" name="MACS" value="4">
-                    <input type="radio" id="5" name="MACS" value="5">
-                </div>
-
-                <div id="CFCS">
-                    CFCS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <input type="radio" id="1" name="CFCS" value="1" > 
-                    <input type="radio" id="2" name="CFCS" value="2">
-                    <input type="radio" id="3" name="CFCS" value="3">
-                    <input type="radio" id="4" name="CFCS" value="4">
-                    <input type="radio" id="5" name="CFCS" value="5">
-                </div>
-
-                <div id="EDACS">
-                    EDACS&nbsp;&nbsp;&nbsp;
-                    <input type="radio" id="1" name="EDACS" value="1" > 
-                    <input type="radio" id="2" name="EDACS" value="2">
-                    <input type="radio" id="3" name="EDACS" value="3">
-                    <input type="radio" id="4" name="EDACS" value="4">
-                    <input type="radio" id="5" name="EDACS" value="5">
-                </div>
-
-                <div id="Cognition">
-                    Cognition
-                    <input type="radio" id="1" name="Cognition" value="1" > 
-                    <input type="radio" id="2" name="Cognition" value="2">
-                    <input type="radio" id="3" name="Cognition" value="3">
-                    <input type="radio" id="4" name="Cognition" value="4">
-                    <input type="radio" id="5" name="Cognition" value="5">
-                </div>
-
+            <div id ="waiting">
+                <br><br><br>
+                Loading page...
+                <br><br><br>
+            </div>
+            <div id = "entry">
                 <br>
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 &nbsp; &nbsp;4 &nbsp; &nbsp;5 &nbsp; &nbsp;6 &nbsp; &nbsp;7
+                IACP Composite Score Calculator
+                <br><br><br>
+                <form name="form">
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  Weight
+                    <br><br>
+                    VI (1-100) : <input type="text" name="VI"/>
+                    &nbsp; &nbsp; &nbsp; &nbsp;
+                    <span id = "k1" align="left">00000</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    <br><br>
 
-                <div id="Epilepsy">
-                    Epilepsy&nbsp;&nbsp;
-                    <input type="radio" id="1" name="Epilepsy" value="1" > 
-                    <input type="radio" id="2" name="Epilepsy" value="2">
-                    <input type="radio" id="3" name="Epilepsy" value="3">
-                    <input type="radio" id="4" name="Epilepsy" value="4">
-                    <input type="radio" id="5" name="Epilepsy" value="5">
-                    <input type="radio" id="6" name="Epilepsy" value="6">
-                    <input type="radio" id="7" name="Epilepsy" value="7">
-                </div>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 &nbsp; &nbsp;4 &nbsp; &nbsp;5 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
 
-                <br>
-                <input type="button" id="Submit" onclick="f1()" value="Get Result"/>
-            </form>
-            <br>
+                    <div id="GMFCS">
+                        GMFCS
+                        &nbsp;&nbsp;
+                        <input type="radio" id="1" name="GMFCS" value="1" > 
+                        <input type="radio" id="2" name="GMFCS" value="2">
+                        <input type="radio" id="3" name="GMFCS" value="3">
+                        <input type="radio" id="4" name="GMFCS" value="4">
+                        <input type="radio" id="5" name="GMFCS" value="5">
+                        &nbsp; &nbsp; &nbsp; &nbsp;
+                        <span id = "k2">00000</span>
+                    </div>
+
+                    <div id="MACS">
+                        MACS
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="radio" id="1" name="MACS" value="1" > 
+                        <input type="radio" id="2" name="MACS" value="2">
+                        <input type="radio" id="3" name="MACS" value="3">
+                        <input type="radio" id="4" name="MACS" value="4">
+                        <input type="radio" id="5" name="MACS" value="5">
+                        &nbsp; &nbsp; &nbsp; &nbsp;
+                        <span id = "k3">00000</span>
+                    </div>
+
+                    <div id="CFCS">
+                        CFCS
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="radio" id="1" name="CFCS" value="1" > 
+                        <input type="radio" id="2" name="CFCS" value="2">
+                        <input type="radio" id="3" name="CFCS" value="3">
+                        <input type="radio" id="4" name="CFCS" value="4">
+                        <input type="radio" id="5" name="CFCS" value="5">
+                        &nbsp; &nbsp; &nbsp; &nbsp;
+                        <span id = "k4">00000</span>
+                    </div>
+
+                    <div id="EDACS">
+                        EDACS
+                        &nbsp;&nbsp;&nbsp;
+                        <input type="radio" id="1" name="EDACS" value="1" > 
+                        <input type="radio" id="2" name="EDACS" value="2">
+                        <input type="radio" id="3" name="EDACS" value="3">
+                        <input type="radio" id="4" name="EDACS" value="4">
+                        <input type="radio" id="5" name="EDACS" value="5">
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        <span id = "k5">00000</span>
+                    </div>
+
+                    <div id="Cognition">
+                        Cognition
+                        &nbsp;
+                        <input type="radio" id="1" name="Cognition" value="1" > 
+                        <input type="radio" id="2" name="Cognition" value="2">
+                        <input type="radio" id="3" name="Cognition" value="3">
+                        <input type="radio" id="4" name="Cognition" value="4">
+                        <input type="radio" id="5" name="Cognition" value="5">
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        <span id = "k6">00000</span>
+                        &nbsp;
+                    </div>
+
+                    <br>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 &nbsp; &nbsp;4 &nbsp; &nbsp;5 &nbsp; &nbsp;6 &nbsp; &nbsp;7 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+
+                    <div id="Epilepsy">
+                        Epilepsy
+                        &nbsp;&nbsp;
+                        <input type="radio" id="1" name="Epilepsy" value="1" > 
+                        <input type="radio" id="2" name="Epilepsy" value="2">
+                        <input type="radio" id="3" name="Epilepsy" value="3">
+                        <input type="radio" id="4" name="Epilepsy" value="4">
+                        <input type="radio" id="5" name="Epilepsy" value="5">
+                        <input type="radio" id="6" name="Epilepsy" value="6">
+                        <input type="radio" id="7" name="Epilepsy" value="7">
+                        &nbsp; &nbsp; &nbsp;
+                        <span id = "k7">00000</span>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </div>
+
+                    <br>
+                    <input type="button" id="Submit" onclick="sub()" value="Compute Score"/>
+
+                </form>
+            </div>
 
             <br><br>
-            <table border="1">
-                <tr><td>Epilepsy Score :</td><td id="score"></td></tr>
-            </table>
+
+            <div id="loading">
+                Waiting for Results
+            </div>
+
+            <div id="result">
+                <input type="button" id="Reset" onclick="reset()" value="Reset"/>
+
+                <br><br>
+
+                <table cellpadding="10" border="1">
+                    <tr><td>Composite Score :</td><td id="score"></td></tr>
+                </table>
+            </div>
         </center>
     </body>
 </html>
